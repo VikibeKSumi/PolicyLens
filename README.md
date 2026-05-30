@@ -22,6 +22,7 @@ pinned: false
 ### ✨ Key Features
 
 - **Two-stage retrieval**: Bi-encoder and Cross-encoder
+- **Graph agent configuration**: Each pipeline is a graph node.
 - **Semantic cache**: Cache response based on meaning
 - **Query rewriting**: Rewrites user query for accurate retrieval
 - **Context compression**: Slices word count sent to LLM
