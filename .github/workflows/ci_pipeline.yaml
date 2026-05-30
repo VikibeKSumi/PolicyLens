@@ -26,7 +26,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/PolicyLens:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/policyLens:latest
         
       # 4. Poke Render to tell it to update
       #- name: Trigger Render Deployment
