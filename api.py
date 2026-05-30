@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Security
 from fastapi.security import APIKeyHeader
 
-from src.engine import Engine
+from src.graph import AgenticRAG
 
 
 load_dotenv()
@@ -20,12 +20,12 @@ api_key_header = APIKeyHeader(
     name="X-API-Key"
 )
 
-engine = Engine()
+engine = AgenticRAG()
  
 @app.post('/ask')
 def ask(query: QueryRequest, api_key: str = Security(api_key_header)):
     if api_key == os.environ["AUTH_KEY"]:
-        response = engine.run(query.query)
+        response = engine.run_graph(query.query)
         return response
     else:
         raise HTTPException(401, detail="Invalid API Key")

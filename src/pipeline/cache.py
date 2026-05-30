@@ -58,24 +58,31 @@ class SemanticCache:
             if similarity >= self.cache_similarity_threshold:
                 # cache match
                 return {"cache_hit": True, 
-                        "embedded_query": embedded_query,
-                        "answer": info.get("result")}
+                        "answer": info.get("answer")}
 
 
         # cache no match
         return {"cache_hit": False, "embedded_query": embedded_query}
 
-    def store(self, query: str, result: dict, embedded_query: torch.tensor):
-    
-        _key = query 
+    def store(self, state: ResponseState):
+        
+        rewritten_query = state.get("rewritten_query")
+        answer = state.get("answer")
+        embedded_query = state.get("embedded_query")
+
+        _key = rewritten_query 
         _value ={
-            "result": result,
+            "answer": answer,
             "embedding": embedded_query,
             "timestamp": time.time()
             } 
         
-        self.cache[_key] = _value
-        self.redis.set(
+        self.cache[_key] = _value #for current runtime
+
+        #for persistent storage
+        self.redis.set( 
             f"cache:{_key}",  # adding prefix. Redis has built-in conversion for bytes
             pickle.dumps(_value) # <- converting to binary before storing to redis
         ) 
+
+        return {}

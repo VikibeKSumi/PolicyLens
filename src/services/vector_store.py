@@ -3,9 +3,11 @@ from llama_index.core import StorageContext
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 import os
 
+
 class VectorDBManager:
 
     def __init__(self, db_path: str, collection_name: str):
+        print(f'{os.getenv("QDRANT_URL", "http://localhost:6333")}')
         self.client = QdrantClient(
             url=os.getenv("QDRANT_URL", "http://localhost:6333"),
             api_key=os.getenv("QDRANT_API_KEY")

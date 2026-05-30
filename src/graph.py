@@ -38,6 +38,8 @@ class AgenticRAG():
         self.db_path = str(Path(self.config.database.get('db_path')))
         self.api_key = os.getenv("GROQ_API_KEY")
         self.cache_similarity_threshold = 0.92
+        self.relevancy_threshold = 0.60
+        self.max_retry_count = 3
 
         logger.info(f"embedding model loading....")
         self.embedding_model = HuggingFaceEmbedding(
@@ -73,7 +75,18 @@ class AgenticRAG():
         logger.info("compiling graph....")
         self.app = self.workflow.compile()
 
+        
+    def rewrite_router(self, state: ResponseState):
 
+        top_relevancy_score = state.get("top_relevancy_score")
+        rewrite_retry_count = state.get("rewrite_retry_count")
+
+        if top_relevancy_score < self.relevancy_threshold and rewrite_retry_count <= self.max_retry_count:
+            return "REWRITE"
+        else:
+            return "CONTINUE"
+        
+        
     def cache_hit_router(self, state: ResponseState):
         cache_hit = state.get("cache_hit")
         return cache_hit
@@ -88,6 +101,7 @@ class AgenticRAG():
         self.workflow.add_node("reranker_node", self.reranker.rerank)
         self.workflow.add_node("context_compressor_node", self.compression.compress)
         self.workflow.add_node("llm_service_node", self.generator.generate_response)
+        self.workflow.add_node("cache_store_node", self.semantic_cache.store)
 
     def create_edges(self):
         logger.info("creating graph edges....")
@@ -98,23 +112,31 @@ class AgenticRAG():
             self.cache_hit_router,
             {
                 True: END,
-                False: "retriever_node"
+                False: "retriever_node",
+                None: "retriever_node"
             })
         self.workflow.add_edge("retriever_node", "reranker_node")
-        self.workflow.add_edge("reranker_node", "context_compressor_node")
+        self.workflow.add_conditional_edges(
+            "reranker_node",
+            self.rewrite_router,
+            {
+                'REWRITE' : "query_rewriter_node",
+                "CONTINUE": "context_compressor_node"
+            })
         self.workflow.add_edge("context_compressor_node", "llm_service_node")
-        self.workflow.add_edge("llm_service_node", END)
+        self.workflow.add_edge("llm_service_node", "cache_store_node")
+        self.workflow.add_edge("cache_store_node", END)
 
 
     def run_graph(self, query):
 
         logger.info("graph is working on query....")
-        user_input = {"query": query}
+        user_input = {"query": query, "rewrite_retry_count": 0}
         result = self.app.invoke(
             input=user_input
         )
 
-        logger.info("graph execution is over...")
+        logger.info("graph execution is over....")
         return result
 
 

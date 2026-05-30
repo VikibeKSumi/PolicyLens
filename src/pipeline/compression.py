@@ -8,10 +8,12 @@ from ..state import ResponseState
 class ContextCompressor:
     """Compresses retrieved context to reduce tokens sent to Groq."""
 
-    def __init__(self, ):
+    def __init__(self, max_tokens: int = 1800):
         self.reorder = LongContextReorder()
+        self.max_tokens = max_tokens
+        
 
-    def compress(self, state: ResponseState, max_tokens: int = 1800) -> List[NodeWithScore]:
+    def compress(self, state: ResponseState,) -> dict:
         reranked_nodes = state.get("reranked_nodes")
         
         # Reorder for better LLM attention
@@ -23,7 +25,7 @@ class ContextCompressor:
 
         for node in reordered:
             node_tokens = len(node.node.get_content().split())
-            if total_tokens + node_tokens > max_tokens:
+            if total_tokens + node_tokens > self.max_tokens:
                 break
             compressed.append(node)
             total_tokens += node_tokens
