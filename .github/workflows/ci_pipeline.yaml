@@ -26,7 +26,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/vantage_core_rag:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/PolicyLens:latest
         
       # 4. Poke Render to tell it to update
       - name: Trigger Render Deployment

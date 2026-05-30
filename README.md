@@ -1,5 +1,5 @@
 ---
-title: VantageCoreRAG
+title: PolicyLens
 emoji: 🔍
 colorFrom: blue
 colorTo: green
@@ -8,7 +8,7 @@ pinned: false
 ---
 
 
-# VantageCoreRAG
+# PolicyLens
 
 **Two-stage retrieval with modular design and centralized configuration**  
 
