@@ -2,7 +2,7 @@
 import json
 
 from datasets import Dataset
-from src.engine import Engine
+from src.graph import AgenticRAG
 from loguru import logger
 
 from langchain_groq import ChatGroq
@@ -23,7 +23,7 @@ load_dotenv()
 def evaluation(n: int):
     
     logger.info(".......Evaluation is running.......")
-    engine = Engine()
+    engine = AgenticRAG()
     api_key = os.environ['GROQ_API_KEY']
     llm = LangchainLLMWrapper(ChatGroq(
         model="llama-3.3-70b-versatile",
@@ -51,7 +51,7 @@ def evaluation(n: int):
     for i, q in enumerate(data.get('question')):
         if i == n:
             break
-        response = engine.run(query=q, eval_report=True)
+        response = engine.run_graph(query=q)
         data["answer"].append(response.get("answer"))
         data["contexts"].append(response.get("contexts"))
         
