@@ -66,13 +66,13 @@ pinned: false
 
 # 1. Clone the repository
 ```bash
-    git clone https://github.com/yourusername/vantage_core_rag.git
-    cd vantage_core_rag
+    git clone https://github.com/VikibeKSumi/PolicyLens.git
+    cd PolicyLens
 ```
 # 2. (optional but recommended) Create and activate environment
 ```bash
-    conda create -n vantage_core_rag python=3.10 -y
-    conda activate vantage_core_rag
+    conda create -n policylens python=3.10 -y
+    conda activate policylens
 ```
 
 # 3. Install dependencies
@@ -105,7 +105,7 @@ docker run -d -p 6333:6333 -v $(pwd)/data/qdrant_storage:/qdrant/storage qdrant/
 ```
 # 8. (main) Run the RAG Engine
 ```bash
-    python run.py
+    python run_graph.py
 ```
 
 # 9. (optional but recommended) Run ragas evaluation
@@ -118,8 +118,8 @@ docker run -d -p 6333:6333 -v $(pwd)/data/qdrant_storage:/qdrant/storage qdrant/
 ### 📁 Folder Structure
 
 ```text
-vantage_core_rag/
-|── run.py                          # Main CLI entry point
+policylens/
+|── run_graph.py                          # Main CLI entry point
 |── ingestion.py                    # Document ingestion
 |── evaluation.py                   # RAGAS evaluation
 |── src/
@@ -136,7 +136,8 @@ vantage_core_rag/
 |   |   |── embedder.py
 |   |   |── llm.py
 |   |   |── vector_store.py    
-|   |── engine.py
+|   |── graph.py
+|   |── state.py
 |── config/
 |   |── config.py
 |   |── settings.yaml
@@ -146,9 +147,6 @@ vantage_core_rag/
 ---
 
 ### 🚧 Future Improvements
-- Agentic RAG
 - Graph based knowledge
-- Persistent cache with Redis
-- Cloud based deployment
 
 ---
